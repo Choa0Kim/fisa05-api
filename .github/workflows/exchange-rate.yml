@@ -1,0 +1,36 @@
+name: Update Exchange Rate
+
+on:
+  schedule:
+    - cron: "0 * * * *"  # 매 시간 정각
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-exchange-rate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Fetch exchange rate and save to file
+        run: python update_exchange_rate.py
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git add exchange_rate.json
+          git commit -m "Update exchange rate" || echo "No changes to commit"
+          git push
