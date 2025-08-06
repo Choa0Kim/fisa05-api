@@ -2,7 +2,7 @@ name: Update Exchange Rate
 
 on:
   schedule:
-    - cron: "0 * * * *"  # 매 시간 정각
+    - cron: "*/5 * * * *"  # 매 시간 정각
   workflow_dispatch:
 
 permissions:
