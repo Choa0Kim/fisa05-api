@@ -25,6 +25,5 @@ jobs:
           res = requests.get(url)
           with open("/tmp/test.json", "w") as f:
               json.dump(res.json(), f, indent=2)
-              git add README.md test.json
           EOF
 
