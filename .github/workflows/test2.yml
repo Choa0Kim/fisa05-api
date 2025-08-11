@@ -1,0 +1,29 @@
+name: Fetch TODO
+
+on:
+  push:
+    branches:
+      - main 
+  schedule:
+    - cron: "*/5 * * * *"  
+
+jobs:
+  fetch_and_save:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Run script
+        run: |
+          python3 - <<'EOF'
+          import requests, json
+          from datetime import datetime
+          minute = datetime.now().minute
+          next_minute = (minute + 1) % 60
+          url = f"https://jsonplaceholder.typicode.com/todos/{next_minute}"
+          res = requests.get(url)
+          with open("/tmp/test.json", "w") as f:
+              json.dump(res.json(), f, indent=2)
+          EOF
+
