@@ -1,39 +1,28 @@
-name: Update test
+name: Fetch TODO
 
 on:
+  push:
+    branches:
+      - main  
   schedule:
     - cron: "*/5 * * * *"  
-  workflow_dispatch:
-
-permissions:
-  contents: write
 
 jobs:
-  update-test:
+  fetch_and_save:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
-
-      - name: Install dependencies
-        run: pip install requests
-
-      - name: Fetch exchange rate and save to file
-        run: python test.py
-
-      - name: Commit and push changes
-    
+      - name: Run script
         run: |
-         git config user.name "github-actions[bot]"
-         git config user.email "github-actions[bot]@users.noreply.github.com"
-         git add README.md test.json
-         git commit -m "Update test in README.md" || echo "No changes to commit"
-         git pull --rebase origin main
-         git push origin main
-
+          python3 - <<'EOF'
+          import requests, json
+          from datetime import datetime
+          minute = datetime.now().minute
+          next_minute = (minute + 1) % 60
+          url = f"https://jsonplaceholder.typicode.com/todos/{next_minute}"
+          res = requests.get(url)
+          with open("/tmp/test.json", "w") as f:
+              json.dump(res.json(), f, indent=2)
+          EOF
