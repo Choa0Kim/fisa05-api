@@ -1,0 +1,39 @@
+name: Update test
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"  
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Fetch exchange rate and save to file
+        run: python update_test.py
+
+      - name: Commit and push changes
+    
+        run: |
+         git config user.name "github-actions[bot]"
+         git config user.email "github-actions[bot]@users.noreply.github.com"
+         git add README.md test.json
+         git commit -m "Update test in README.md" || echo "No changes to commit"
+         git pull --rebase origin main
+         git push origin main
+
