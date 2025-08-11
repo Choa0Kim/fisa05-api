@@ -1,4 +1,4 @@
-name: Fetch TODO
+name: test
 
 on:
   push:
